@@ -64,6 +64,7 @@ async function generateGradientImage(colors, width, height, direction) {
         const chromaColors = colors.map(color => chroma(color));
 
         // Lógica para gerar o gradiente linear
+        if(!direction) direction = 'horizontal'
         const gradient = ctx.createLinearGradient(0, 0, direction === 'horizontal' ? canvas.width : 0, direction === 'vertical' ? canvas.height : 0);
 
         chromaColors.forEach((color, index) => {
