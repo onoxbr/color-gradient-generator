@@ -1,8 +1,25 @@
 const chroma = require('chroma-js');
 const fs = require('fs');
 const { createCanvas, loadImage } = require('canvas');
+const fetch = require('node-fetch');
 
-function generateGradientImage(colors, width, height, direction) {
+async function uploadImageToImgur(imageBuffer) {
+    const formData = new FormData();
+    formData.append('image', imageBuffer, { filename: 'gradient.png', contentType: 'image/png' });
+
+    const response = await fetch('https://api.imgur.com/3/upload', {
+        method: 'POST',
+        headers: {
+            Authorization: 'Client-ID YOUR_IMGUR_CLIENT_ID', // Substitua com seu Client ID do Imgur
+        },
+        body: formData,
+    });
+
+    const result = await response.json();
+    return result.data.link;
+}
+
+async function generateGradientImage(colors, width, height, direction) {
     if (!colors || colors.length < 2) {
         throw new Error('At least two colors are required to generate a gradient.');
     }
@@ -20,10 +37,12 @@ function generateGradientImage(colors, width, height, direction) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Convert canvas to a data URL
-    const imageLink = canvas.toDataURL('image/png');
+    const imageBuffer = canvas.toBuffer();
 
-    return imageLink;
+    // Faz o upload da imagem para o Imgur
+    const imgurLink = await uploadImageToImgur(imageBuffer);
+
+    return imgurLink;
 }
 
 function generateGradient(colors, direction) {
