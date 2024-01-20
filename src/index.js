@@ -31,8 +31,8 @@ function asyncFunction(value) {
         }, 1000);
     });
 }
+const someAsyncValue = /* defina o valor assíncrono aqui */
 
-// Exemplo de uso
 handleAsyncNullish(someAsyncValue)
     .then(result => {
         console.log(result);
@@ -40,6 +40,8 @@ handleAsyncNullish(someAsyncValue)
     .catch(error => {
         console.error(error);
     });
+
+
 
 async function uploadImageToImgur(imageBuffer) {
     const response = await fetch('https://api.imgur.com/3/image', {
