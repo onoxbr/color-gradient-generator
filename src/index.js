@@ -4,22 +4,18 @@ const { createCanvas, loadImage } = require('canvas');
 const fetch = require('node-fetch');
 
 async function uploadImageToImgur(imageBuffer) {
-    const formData = new FormData();
-    const blob = new Blob([imageBuffer], { type: 'image/png' });
-    formData.append('image', blob, 'gradient.png');
-
-    const response = await fetch('https://api.imgur.com/3/upload', {
+    const response = await fetch('https://api.imgur.com/3/image', {
         method: 'POST',
         headers: {
             Authorization: 'Client-ID fae6f5d7405b960', // Substitua com seu Client ID do Imgur
+            'Content-Type': 'image/png',
         },
-        body: formData,
+        body: imageBuffer,
     });
 
     const result = await response.json();
     return result.data.link;
 }
-
 
 async function generateGradientImage(colors, width, height, direction) {
     if (!colors || colors.length < 2) {
