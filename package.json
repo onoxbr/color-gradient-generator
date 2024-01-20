@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "canvas": "^2.11.2",
+    "chroma-js": "^2.4.2",
     "imgbb-uploader": "^1.5.1"
   },
   "repository": {

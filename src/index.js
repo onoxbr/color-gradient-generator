@@ -1,5 +1,6 @@
 const { createCanvas } = require('canvas');
 const imgbbUploader = require('imgbb-uploader');
+const chroma = require('chroma-js')
 
 // Função para fazer upload da imagem para o ImgBB
 async function uploadImageToImgBB(imageBuffer) {
@@ -74,13 +75,18 @@ async function generateGradientImage(colors, width, height, direction) {
 // Função para gerar um gradiente
 async function generateGradient(colors, direction) {
     try {
+        // Simulando uma validação assíncrona
         await handleAsyncNullish(colors);
 
         if (!colors || colors.length < 2) {
             throw new Error('At least two colors are required to generate a gradient.');
         }
 
-        // Lógica para gerar o gradiente...
+        const chromaColors = colors.map(color => chroma(color));
+        const gradientStops = chromaColors.map((color, index) => ({
+            stop: index / (chromaColors.length - 1),
+            color: color.hex(),
+        }));
 
         const gradient = {
             type: 'linear-gradient',
@@ -90,6 +96,7 @@ async function generateGradient(colors, direction) {
 
         return gradient;
     } catch (error) {
+        // Trate erros aqui
         console.error('Error in generateGradient:', error.message);
         throw error;
     }
