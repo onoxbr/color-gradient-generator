@@ -1,6 +1,6 @@
 {
   "name": "color-gradient-generator",
-  "version": "1.0.17",
+  "version": "1.0.0",
   "description": "Easily generate gradients!",
   "main": "src/index.js",
   "scripts": {
@@ -9,10 +9,8 @@
   "author": "nooxbr",
   "license": "MIT",
   "dependencies": {
-    "@sapphire/framework": "^5.0.7",
     "canvas": "^2.11.2",
-    "chroma-js": "^2.4.2",
-    "node-fetch": "2.7.0"
+    "imgbb-uploader": "^1.5.1"
   },
   "repository": {
     "type": "git",
