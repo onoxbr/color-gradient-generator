@@ -1,19 +1,82 @@
-const chroma = require('chroma-js');
 const { createCanvas } = require('canvas');
 const fetch = require('node-fetch');
 
-// Função para fazer upload da imagem para o Uploadfiles.io
-async function uploadImageToUploadfiles(imageBuffer) {
-    const response = await fetch('https://upload.uploadfiles.io/upload', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'image/png',
-        },
-        body: imageBuffer,
-    });
+async function createUploadSession(fileSize) {
+    try {
+        const response = await fetch('https://up.ufile.io/v1/upload/create_session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ file_size: fileSize }),
+        });
 
-    const result = await response.json();
-    return result.data.url;
+        if (!response.ok) {
+            throw new Error(`Failed to create upload session. Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (!result || !result.fuid) {
+            throw new Error('Failed to get "fuid" from the response.');
+        }
+
+        return result.fuid;
+    } catch (error) {
+        console.error('Error in createUploadSession:', error.message);
+        throw error;
+    }
+}
+
+async function uploadChunk(fuid, chunkIndex, fileChunk) {
+    try {
+        const formData = new FormData();
+        formData.append('chunk_index', chunkIndex);
+        formData.append('fuid', fuid);
+        formData.append('file', fileChunk);
+
+        const response = await fetch('https://up.ufile.io/v1/upload/chunk', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to upload chunk. Status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error in uploadChunk:', error.message);
+        throw error;
+    }
+}
+
+async function finalizeUpload(fuid, fileName, fileType, totalChunks) {
+    try {
+        const response = await fetch('https://up.ufile.io/v1/upload/finalise', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fuid,
+                file_name: fileName,
+                file_type: fileType,
+                total_chunks: totalChunks,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to finalize upload. Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (!result || !result.url) {
+            throw new Error('Failed to get URL from the response.');
+        }
+
+        return result.url;
+    } catch (error) {
+        console.error('Error in finalizeUpload:', error.message);
+        throw error;
+    }
 }
 
 async function handleAsyncNullish(value) {
@@ -69,8 +132,23 @@ async function generateGradientImage(colors, width, height, direction) {
 
         const imageBuffer = canvas.toBuffer();
 
-        // Faz o upload da imagem para o Uploadfiles.io
-        const uploadfilesLink = await uploadImageToUploadfiles(imageBuffer);
+        // Cria uma sessão de upload
+        const fuid = await createUploadSession(imageBuffer.length);
+
+        // Divide a imagem em chunks e faz o upload
+        const chunkSize = 1024 * 1024; // 1MB (ajuste conforme necessário)
+        const totalChunks = Math.ceil(imageBuffer.length / chunkSize);
+
+        for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            const start = chunkIndex * chunkSize;
+            const end = Math.min(start + chunkSize, imageBuffer.length);
+            const chunk = imageBuffer.slice(start, end);
+
+            await uploadChunk(fuid, chunkIndex, chunk);
+        }
+
+        // Finaliza o upload e obtém o URL
+        const uploadfilesLink = await finalizeUpload(fuid, 'gradient', 'png', totalChunks);
 
         return uploadfilesLink;
     } catch (error) {
