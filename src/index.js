@@ -12,10 +12,8 @@ async function uploadImageToImgBB(imageBuffer) {
 
         const response = await imgbbUploader(options);
 
-        console.log('ImgBB Response:', response);
-
         if (response && response.url) {
-            return response.url;
+            return response.url
         } else {
             throw new Error('ImgBB response missing URL');
         }
@@ -24,7 +22,6 @@ async function uploadImageToImgBB(imageBuffer) {
         throw new Error('Error uploading image to ImgBB');
     }
 }
-
 // Função para validar valores assíncronos
 async function handleAsyncNullish(value) {
     try {
