@@ -5,7 +5,8 @@ const fetch = require('node-fetch');
 
 async function uploadImageToImgur(imageBuffer) {
     const formData = new FormData();
-    formData.append('image', imageBuffer, { filename: 'gradient.png', contentType: 'image/png' });
+    const blob = new Blob([imageBuffer], { type: 'image/png' });
+    formData.append('image', blob, 'gradient.png');
 
     const response = await fetch('https://api.imgur.com/3/upload', {
         method: 'POST',
@@ -18,6 +19,7 @@ async function uploadImageToImgur(imageBuffer) {
     const result = await response.json();
     return result.data.link;
 }
+
 
 async function generateGradientImage(colors, width, height, direction) {
     if (!colors || colors.length < 2) {
