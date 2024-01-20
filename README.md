@@ -32,7 +32,7 @@ Generates an object representing a linear gradient.
 
 ### `generateGradientImage(colors, width, height, direction)`
 
-Generates an image of a linear gradient and saves it as 'gradient.png'.
+Generates an image of a linear gradient and return the URL.
 
 * `colors`: Array of colors for the gradient.
 * `width`: Image width (optional).

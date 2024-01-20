@@ -1,7 +1,8 @@
 const chroma = require('chroma-js');
 const fs = require('fs');
 const { createCanvas, loadImage } = require('canvas');
-import fetch from 'node-fetch'
+const fetch = require('node-fetch');
+
 async function uploadImageToImgur(imageBuffer) {
     const formData = new FormData();
     formData.append('image', imageBuffer, { filename: 'gradient.png', contentType: 'image/png' });
