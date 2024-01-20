@@ -7,7 +7,7 @@ function generateGradientImage(colors, width, height, direction) {
         throw new Error('At least two colors are required to generate a gradient.');
     }
 
-    const canvas = createCanvas(width || 300, height || 100);
+    const canvas = createCanvas(width || 800, height || 400);
     const ctx = canvas.getContext('2d');
 
     const chromaColors = colors.map(color => chroma(color));
@@ -20,10 +20,10 @@ function generateGradientImage(colors, width, height, direction) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const imageBuffer = canvas.toBuffer();
-    fs.writeFileSync('gradient.png', imageBuffer);
+    // Convert canvas to a data URL
+    const imageLink = canvas.toDataURL('image/png');
 
-    console.log('Gradient image successfully generated!');
+    return imageLink;
 }
 
 function generateGradient(colors, direction) {
