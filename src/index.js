@@ -1,28 +1,45 @@
 const chroma = require('chroma-js');
 const { createCanvas } = require('canvas');
 const fetch = require('node-fetch');
+const { SapphireError } = require('@sapphire/framework');
 
 async function handleAsyncNullish(value) {
-    // Simule uma verificação assíncrona (substitua por sua lógica real)
-    const result = await asyncFunction(value);
+    try {
+        // Simule uma verificação assíncrona (substitua por sua lógica real)
+        const result = await asyncFunction(value);
 
-    // Se o resultado não for null ou undefined, rejeite com um erro personalizado
-    if (result !== null && result !== undefined) {
-        throw new Error('Value is not null or undefined');
+        // Se o resultado não for null ou undefined, rejeite com um erro personalizado
+        if (result !== null && result !== undefined) {
+            throw new SapphireError('Value is not null or undefined');
+        }
+
+        // Caso contrário, o valor passou na validação
+        return result;
+    } catch (error) {
+        // Trate erros aqui
+        console.error('Error in handleAsyncNullish:', error.message);
+        throw error;
     }
-
-    // Caso contrário, o valor passou na validação
-    return result;
 }
 
 // Função de exemplo para simular uma operação assíncrona
 function asyncFunction(value) {
     return new Promise(resolve => {
         setTimeout(() => {
-            resolve(value);
+            // Simule uma lógica que pode retornar null ou undefined
+            resolve(null);
         }, 1000);
     });
 }
+
+// Exemplo de uso
+handleAsyncNullish(someAsyncValue)
+    .then(result => {
+        console.log(result);
+    })
+    .catch(error => {
+        console.error(error);
+    });
 
 async function uploadImageToImgur(imageBuffer) {
     const response = await fetch('https://api.imgur.com/3/image', {
