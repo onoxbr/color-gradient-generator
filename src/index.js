@@ -12,7 +12,13 @@ async function uploadImageToImgBB(imageBuffer) {
 
         const response = await imgbbUploader(options);
 
-        return response.url;
+        console.log('ImgBB Response:', response);
+
+        if (response && response.url) {
+            return response.url;
+        } else {
+            throw new Error('ImgBB response missing URL');
+        }
     } catch (error) {
         console.error('Error in uploadImageToImgBB:', error.message);
         throw new Error('Error uploading image to ImgBB');
@@ -87,6 +93,8 @@ async function generateGradient(colors, direction) {
             stop: index / (chromaColors.length - 1),
             color: color.hex(),
         }));
+
+        // Lógica para gerar o gradiente...
 
         const gradient = {
             type: 'linear-gradient',
