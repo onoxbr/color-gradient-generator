@@ -48,8 +48,10 @@ function asyncFunction(value) {
 }
 
 // Função para gerar um gradiente e fazer upload da imagem resultante para o ImgBB
+
 async function generateGradientImage(colors, width, height, direction) {
     try {
+        // Simulando uma validação assíncrona
         await handleAsyncNullish(colors);
 
         if (!colors || colors.length < 2) {
@@ -59,8 +61,17 @@ async function generateGradientImage(colors, width, height, direction) {
         const canvas = createCanvas(width || 800, height || 400);
         const ctx = canvas.getContext('2d');
 
-        // Lógica para gerar o gradiente...
+        const chromaColors = colors.map(color => chroma(color));
 
+        // Lógica para gerar o gradiente linear
+        const gradient = ctx.createLinearGradient(0, 0, direction === 'horizontal' ? canvas.width : 0, direction === 'vertical' ? canvas.height : 0);
+
+        chromaColors.forEach((color, index) => {
+            gradient.addColorStop(index / (chromaColors.length - 1), color.hex());
+        });
+
+        // Pinte o gradiente no canvas
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const imageBuffer = canvas.toBuffer();
@@ -70,6 +81,7 @@ async function generateGradientImage(colors, width, height, direction) {
 
         return imgbbLink;
     } catch (error) {
+        // Trate erros aqui
         console.error('Error in generateGradientImage:', error.message);
         throw error;
     }
