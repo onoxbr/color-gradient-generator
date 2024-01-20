@@ -1,5 +1,6 @@
 const { createCanvas } = require('canvas');
 const fetch = require('node-fetch');
+const chroma = require('chroma-js');
 
 async function createUploadSession(fileSize) {
     try {
