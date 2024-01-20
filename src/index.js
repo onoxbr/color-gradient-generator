@@ -1,7 +1,20 @@
 const chroma = require('chroma-js');
 const { createCanvas } = require('canvas');
 const fetch = require('node-fetch');
-const { SapphireError } = require('@sapphire/framework');
+
+// Função para fazer upload da imagem para o Uploadfiles.io
+async function uploadImageToUploadfiles(imageBuffer) {
+    const response = await fetch('https://upload.uploadfiles.io/upload', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'image/png',
+        },
+        body: imageBuffer,
+    });
+
+    const result = await response.json();
+    return result.data.url;
+}
 
 async function handleAsyncNullish(value) {
     try {
@@ -10,7 +23,7 @@ async function handleAsyncNullish(value) {
 
         // Se o resultado não for null ou undefined, rejeite com um erro personalizado
         if (result !== null && result !== undefined) {
-            throw new SapphireError('Value is not null or undefined');
+            throw new Error('Value is not null or undefined');
         }
 
         // Caso contrário, o valor passou na validação
@@ -30,31 +43,6 @@ function asyncFunction(value) {
             resolve(null);
         }, 1000);
     });
-}
-const someAsyncValue = /* defina o valor assíncrono aqui */
-
-handleAsyncNullish(someAsyncValue)
-    .then(result => {
-        console.log(result);
-    })
-    .catch(error => {
-        console.error(error);
-    });
-
-
-
-async function uploadImageToImgur(imageBuffer) {
-    const response = await fetch('https://api.imgur.com/3/image', {
-        method: 'POST',
-        headers: {
-            Authorization: 'Client-ID fae6f5d7405b960', // Substitua com seu Client ID do Imgur
-            'Content-Type': 'image/png',
-        },
-        body: imageBuffer,
-    });
-
-    const result = await response.json();
-    return result.data.link;
 }
 
 async function generateGradientImage(colors, width, height, direction) {
@@ -81,10 +69,10 @@ async function generateGradientImage(colors, width, height, direction) {
 
         const imageBuffer = canvas.toBuffer();
 
-        // Faz o upload da imagem para o Imgur
-        const imgurLink = await uploadImageToImgur(imageBuffer);
+        // Faz o upload da imagem para o Uploadfiles.io
+        const uploadfilesLink = await uploadImageToUploadfiles(imageBuffer);
 
-        return imgurLink;
+        return uploadfilesLink;
     } catch (error) {
         // Trate erros aqui
         console.error('Error in generateGradientImage:', error.message);
